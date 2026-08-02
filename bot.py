@@ -11,7 +11,7 @@ from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 BOT_TOKEN = "8917941915:AAEEGwXRz0caxTwVUIP-havu5hhyiwlG5I8"
 CHANNEL_USERNAME = "@Zerotrace_root" 
 BOT_USERNAME = "ZeroTraceYTbot" # ⚠️ Dhyan rahe: Ye bilkul sahi hona chahiye, warna 'Username not found' aayega.
-ADMIN_ID = 1746944997  # 👈 APNA TELEGRAM USER ID YAHAN DALEIN
+ADMIN_ID = [1746944997, 5727876423, 8436397869]  # 👈 APNA TELEGRAM USER ID YAHAN DALEIN
 
 # ⚙️ Settings
 START_CREDITS = 2
@@ -108,8 +108,8 @@ def get_premium_keyboard():
 @bot.message_handler(commands=['earn'])
 def earn_command(message):
     markup = InlineKeyboardMarkup()
-    markup.add(InlineKeyboardButton("👥 Refer & Earn (+1 Credit)", callback_data="earn_referral"))
-    markup.add(InlineKeyboardButton("🔗 Shortlink Task (+2 Credits)", callback_data="earn_shortlink"))
+    markup.add(InlineKeyboardButton("𝗥𝗲𝗳𝗲𝗿 & 𝗘𝗮𝗿𝗻 (+𝟭 𝗖𝗿𝗲𝗱𝗶𝘁)", callback_data="𝙚𝙖𝙧𝙣_𝙧𝙚𝙛𝙚𝙧𝙧𝙖𝙡"))
+    markup.add(InlineKeyboardButton("𝗦𝗵𝗼𝗿𝘁𝗹𝗶𝗻𝗸 𝗧𝗮𝘀𝗸 (+𝟮 𝗖𝗿𝗲𝗱𝗶𝘁𝘀)", callback_data="𝗲𝗮𝗿𝗻_𝘀𝗵𝗼𝗿𝘁𝗹𝗶𝗻𝗸"))
     text = "💸 <b>EARN FREE CREDITS</b>\n━━━━━━━━━━━━━━━━━━━━\nChoose a method below to earn credits:"
     bot.send_message(message.chat.id, text, reply_markup=markup)
 
@@ -121,7 +121,7 @@ def earn_system_handler(call):
         data = get_user_data(user_id)
         if not data: return
         vip_status = "🟢 VIP" if is_vip(data[2]) else "🔴 Basic"
-        text = f"💎 <b>ZERO TRACE ENGINE</b> 💎\nCredits: <code>{data[0]}</code> | Status: {vip_status}\n\nSend target number to search.\nCommands: /earn, /daily, /redeem, /history, /top\nDev ➜ ZeroTrace Team"
+        text = f"💎 <b>𝙕𝙀𝙍𝙊 𝙏𝙍𝘼𝘾𝙀 𝙀𝙉𝙂𝙄𝙉𝙀</b> 💎\nCredits: <code>{data[0]}</code> | Status: {vip_status}\n\nSend target number to search.\nCommands: /earn, /daily, /redeem, /history, /top\nDev ➜ 𝗭𝗲𝗿𝗼𝗧𝗿𝗮𝗰𝗲 𝗧𝗲𝗮𝗺 𝗘𝗡𝗚𝗜𝗡𝗘"
         bot.edit_message_text(text=text, chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=get_premium_keyboard(), parse_mode="HTML")
         
     elif call.data == "earn_menu":
@@ -444,7 +444,7 @@ def process_query(message):
         except: continue
 
     if extracted_data:
-        api_status = "SUCCESS 🟢"
+        api_status = "𝙎𝙐𝘾𝘾𝙀𝙎𝙎"
         result_data = "".join([f"▪️ <b>{k}</b> : <code>{extracted_data[k]}</code>\n" for k in extracted_data])
         c.execute("INSERT INTO history (user_id, query_data, timestamp) VALUES (?, ?, ?)", (user_id, query_data, int(time.time())))
         conn.commit()
@@ -452,7 +452,7 @@ def process_query(message):
             update_credits(user_id, -SEARCH_COST)
             current_credits -= SEARCH_COST
     else:
-        api_status = "FAILED 🔴"
+        api_status = "𝗙𝗔𝗜𝗟𝗘𝗗"
         result_data = "<code>NO DATA FOUND</code>"
 
     markup = InlineKeyboardMarkup()
@@ -460,12 +460,12 @@ def process_query(message):
     markup.add(InlineKeyboardButton("🌐 Website", url="https://zerotrace.site.je/"))
 
     response_text = (
-        "<b>✦ SYSTEM RESPONSE ✦</b>\n━━━━━━━━━━━━━━━━━━━━\n\n"
+        "<b>✦ 𝗦𝗬𝗦𝗧𝗘𝗠 𝗥𝗘𝗦𝗣𝗢𝗡𝗦𝗘 ✦</b>\n━━━━━━━━━━━━━━━━━━━━\n\n"
         f"🔍 <b>Query :</b> <code>{query_data}</code>\n"
         f"📊 <b>Status :</b> <b>{api_status}</b>\n\n"
         f"📂 <b>Extracted Data :</b>\n{result_data}\n━━━━━━━━━━━━━━━━━━━━\n"
         f"💳 <b>Credits Left :</b> <code>{'Unlimited 👑' if has_vip else current_credits}</code>\n"
-        "⚡️ <i>Powered by ZeroTrace Team</i>"
+        "⚡️ <i>𝗣𝗼𝘄𝗲𝗿𝗲𝗱 𝗯𝘆 𝗭𝗲𝗿𝗼𝗧𝗿𝗮𝗰𝗲 𝗧𝗲𝗮𝗺</i>"
     )
     
     bot.delete_message(message.chat.id, loading_msg.message_id) 
