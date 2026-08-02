@@ -8,8 +8,8 @@ from fpdf import FPDF
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 # 👇 Configuration
-BOT_TOKEN = "8893608444:AAFqAw6zlt_71ybifTvkd05Z2re7_z208hM"
-CHANNEL_USERNAME = "Zerotrace_root" 
+BOT_TOKEN = "8917941915:AAEEGwXRz0caxTwVUIP-havu5hhyiwlG5I8"
+CHANNEL_USERNAME = "@Zerotrace_root" 
 BOT_USERNAME = "ZeroTraceYTbot" # ⚠️ Dhyan rahe: Ye bilkul sahi hona chahiye, warna 'Username not found' aayega.
 ADMIN_ID = 1746944997  # 👈 APNA TELEGRAM USER ID YAHAN DALEIN
 
