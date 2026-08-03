@@ -10,18 +10,18 @@ from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 # 👇 Configuration
 BOT_TOKEN = "8917941915:AAEEGwXRz0caxTwVUIP-havu5hhyiwlG5I8"
 CHANNEL_USERNAME = "@Zerotrace_root" 
-BOT_USERNAME = "ZeroTraceYTbot" # ⚠️ Dhyan rahe: Ye bilkul sahi hona chahiye, warna 'Username not found' aayega.
+BOT_USERNAME = "ZeroTraceYTbot" # ⚠️ Dhyan rahe: Ye bilkul sahi hona chahiye
 ADMIN_ID = [1746944997, 5727876423, 8436397869]  # 👈 APNA TELEGRAM USER ID YAHAN DALEIN
 
 # ⚙️ Settings
-START_CREDITS = 2
+START_CREDITS = 1
 REFERRAL_BONUS = 1   
 SHORTLINK_BONUS = 2  
 SEARCH_COST = 1
 COOLDOWN_TIME = 5
-DAILY_BONUS = 1
+DAILY_BONUS = 2
 
-# 🔗 NAYA URL Shortener API (Arolinks)
+# 🔗 URL Shortener API (Arolinks)
 SHORTENER_API_KEY = "ace7502b25fc2e46fccd077f7f246006cf422b09"
 SHORTENER_BASE_URL = "https://arolinks.com/api"
 
@@ -108,8 +108,8 @@ def get_premium_keyboard():
 @bot.message_handler(commands=['earn'])
 def earn_command(message):
     markup = InlineKeyboardMarkup()
-    markup.add(InlineKeyboardButton("𝗥𝗲𝗳𝗲𝗿 & 𝗘𝗮𝗿𝗻 (+𝟭 𝗖𝗿𝗲𝗱𝗶𝘁)", callback_data="𝙚𝙖𝙧𝙣_𝙧𝙚𝙛𝙚𝙧𝙧𝙖𝙡"))
-    markup.add(InlineKeyboardButton("𝗦𝗵𝗼𝗿𝘁𝗹𝗶𝗻𝗸 𝗧𝗮𝘀𝗸 (+𝟮 𝗖𝗿𝗲𝗱𝗶𝘁𝘀)", callback_data="𝗲𝗮𝗿𝗻_𝘀𝗵𝗼𝗿𝘁𝗹𝗶𝗻𝗸"))
+    markup.add(InlineKeyboardButton("👥 Refer & Earn (+1 Credit)", callback_data="earn_referral"))
+    markup.add(InlineKeyboardButton("🔗 Shortlink Task (+2 Credits)", callback_data="earn_shortlink"))
     text = "💸 <b>EARN FREE CREDITS</b>\n━━━━━━━━━━━━━━━━━━━━\nChoose a method below to earn credits:"
     bot.send_message(message.chat.id, text, reply_markup=markup)
 
@@ -121,7 +121,7 @@ def earn_system_handler(call):
         data = get_user_data(user_id)
         if not data: return
         vip_status = "🟢 VIP" if is_vip(data[2]) else "🔴 Basic"
-        text = f"💎 <b>𝙕𝙀𝙍𝙊 𝙏𝙍𝘼𝘾𝙀 𝙀𝙉𝙂𝙄𝙉𝙀</b> 💎\nCredits: <code>{data[0]}</code> | Status: {vip_status}\n\nSend target number to search.\nCommands: /earn, /daily, /redeem, /history, /top\nDev ➜ 𝗭𝗲𝗿𝗼𝗧𝗿𝗮𝗰𝗲 𝗧𝗲𝗮𝗺 𝗘𝗡𝗚𝗜𝗡𝗘"
+        text = f"💎 <b>ZERO TRACE ENGINE</b> 💎\nCredits: <code>{data[0]}</code> | Status: {vip_status}\n\nSend target number to search.\nCommands: /earn, /daily, /redeem, /history, /top\nDev ➜ ZeroTrace Team"
         bot.edit_message_text(text=text, chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=get_premium_keyboard(), parse_mode="HTML")
         
     elif call.data == "earn_menu":
@@ -143,11 +143,11 @@ def earn_system_handler(call):
         
         task_id = f"T{user_id}{int(time.time())}"
         target_url = f"https://t.me/{BOT_USERNAME}?start={task_id}"
+        encoded_url = urllib.parse.quote(target_url)
         
-        # Arolinks API Parameters
         api_params = {
             "api": SHORTENER_API_KEY,
-            "url": target_url
+            "url": encoded_url
         }
         
         try:
@@ -301,8 +301,6 @@ def admin_controls(message):
         elif cmd == '/remcredit':
             update_credits(int(args[1]), -int(args[2]))
             bot.send_message(message.chat.id, f"✅ Removed {args[2]} credits from {args[1]}")
-            
-        # 🛠️ NAYA: ALL USERS CREDIT CHANGER
         elif cmd == '/addallcredit':
             amt = int(args[1])
             c.execute("UPDATE users SET credits = credits + ?", (amt,))
@@ -311,7 +309,6 @@ def admin_controls(message):
             amt = int(args[1])
             c.execute("UPDATE users SET credits = ?", (amt,))
             bot.send_message(message.chat.id, f"✅ Set credits to {amt} for ALL users successfully!")
-            
         elif cmd == '/addvip':
             vip_time = time.time() + (int(args[2]) * 86400)
             c.execute("UPDATE users SET vip_until=? WHERE user_id=?", (vip_time, int(args[1])))
@@ -391,7 +388,7 @@ def handle_pdf_download(call):
     except Exception as e:
         bot.send_message(call.message.chat.id, f"⚠️ PDF Error: <code>{str(e)[:50]}</code>")
 
-# --- CORE SEARCH LOGIC ---
+# --- CORE SEARCH LOGIC WITH SMART DATA EXTRACTOR ---
 @bot.message_handler(func=lambda message: True)
 def process_query(message):
     user_id = message.from_user.id
@@ -431,28 +428,39 @@ def process_query(message):
             response = requests.get(api_endpoint.format(query_data), timeout=10)
             if response.status_code == 200:
                 api_data = response.json() 
-                target_keys = {'fathername': 'Father Name', 'fullname': 'Full Name', 'documentnumber': 'Document No', 'adres': 'Address', 'region': 'Region'}
+                
+                # 🛠️ SMART EXTRACTOR (Sirf in kachre wale words ko hide karega aur baaki sab print karega)
+                ignore_keys = ['developer', 'status', 'response_time_ms', 'query', 'title']
+                
                 def find_keys(d):
                     if isinstance(d, dict):
                         for k, v in d.items():
-                            if str(k).lower() in target_keys: extracted_data[target_keys[str(k).lower()]] = v
-                            elif isinstance(v, (dict, list)): find_keys(v)
+                            if isinstance(v, (dict, list)):
+                                find_keys(v)
+                            else:
+                                k_lower = str(k).lower()
+                                if k_lower not in ignore_keys and not k_lower.startswith('source'):
+                                    if v is not None and str(v).strip() != "":
+                                        extracted_data[str(k).title()] = v
                     elif isinstance(d, list):
-                        for item in d: find_keys(item)
+                        for item in d:
+                            find_keys(item)
+                            
                 find_keys(api_data)
                 break
         except: continue
 
     if extracted_data:
-        api_status = "𝙎𝙐𝘾𝘾𝙀𝙎𝙎"
-        result_data = "".join([f"▪️ <b>{k}</b> : <code>{extracted_data[k]}</code>\n" for k in extracted_data])
+        api_status = "SUCCESS 🟢"
+        result_data = "".join([f"▪️ <b>{k}</b> : <code>{v}</code>\n" for k, v in extracted_data.items()])
+        
         c.execute("INSERT INTO history (user_id, query_data, timestamp) VALUES (?, ?, ?)", (user_id, query_data, int(time.time())))
         conn.commit()
         if not has_vip:
             update_credits(user_id, -SEARCH_COST)
             current_credits -= SEARCH_COST
     else:
-        api_status = "𝗙𝗔𝗜𝗟𝗘𝗗"
+        api_status = "FAILED 🔴"
         result_data = "<code>NO DATA FOUND</code>"
 
     markup = InlineKeyboardMarkup()
@@ -460,12 +468,12 @@ def process_query(message):
     markup.add(InlineKeyboardButton("🌐 Website", url="https://zerotrace.site.je/"))
 
     response_text = (
-        "<b>✦ 𝗦𝗬𝗦𝗧𝗘𝗠 𝗥𝗘𝗦𝗣𝗢𝗡𝗦𝗘 ✦</b>\n━━━━━━━━━━━━━━━━━━━━\n\n"
+        "<b>✦ SYSTEM RESPONSE ✦</b>\n━━━━━━━━━━━━━━━━━━━━\n\n"
         f"🔍 <b>Query :</b> <code>{query_data}</code>\n"
         f"📊 <b>Status :</b> <b>{api_status}</b>\n\n"
         f"📂 <b>Extracted Data :</b>\n{result_data}\n━━━━━━━━━━━━━━━━━━━━\n"
         f"💳 <b>Credits Left :</b> <code>{'Unlimited 👑' if has_vip else current_credits}</code>\n"
-        "⚡️ <i>𝗣𝗼𝘄𝗲𝗿𝗲𝗱 𝗯𝘆 𝗭𝗲𝗿𝗼𝗧𝗿𝗮𝗰𝗲 𝗧𝗲𝗮𝗺</i>"
+        "⚡️ <i>Powered by ZeroTrace Team</i>"
     )
     
     bot.delete_message(message.chat.id, loading_msg.message_id) 
