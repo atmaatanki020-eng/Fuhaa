@@ -11,7 +11,7 @@ from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 BOT_TOKEN = "8917941915:AAEEGwXRz0caxTwVUIP-havu5hhyiwlG5I8"
 CHANNEL_USERNAME = "@Zerotrace_root" 
 BOT_USERNAME = "ZeroTraceYTbot" # ⚠️ Dhyan rahe: Ye bilkul sahi hona chahiye
-ADMIN_ID = [1746944997, 5727876423, 8436397869]  # 👈 APNA TELEGRAM USER ID YAHAN DALEIN
+ADMIN_ID = 1746944997  # 👈 APNA TELEGRAM USER ID YAHAN DALEIN
 
 # ⚙️ Settings
 START_CREDITS = 1
@@ -19,7 +19,7 @@ REFERRAL_BONUS = 1
 SHORTLINK_BONUS = 2  
 SEARCH_COST = 1
 COOLDOWN_TIME = 5
-DAILY_BONUS = 2
+DAILY_BONUS = 0
 
 # 🔗 URL Shortener API (Arolinks)
 SHORTENER_API_KEY = "ace7502b25fc2e46fccd077f7f246006cf422b09"
